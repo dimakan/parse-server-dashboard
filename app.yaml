@@ -1,0 +1,10 @@
+runtime: nodejs
+#vm: true
+env: flex
+
+env_variables:
+  # --REQUIRED--
+  APP_ID: <your-app-id>
+  MASTER_KEY: <your-master-key>
+  # --OPTIONAL--
+  # APP_NAME: <your-app-name>
