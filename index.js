@@ -8,12 +8,17 @@ var path = require('path');
 
 var localParseServer = 'http://localhost:1337/parse';
 
+var databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
+
+if (!databaseUri) {
+  console.log('DATABASE_URI not specified, falling back to localhost.');
+}
 
 var api = new ParseServer({
   databaseURI: databaseUri || 'mongodb://localhost:27017/dev',
   cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
   appId: process.env.APP_ID || 'myAppId',
-  masterKey: process.env.MASTER_KEY || '', //Add your master key here. Keep it secret!
+  masterKey: process.env.MASTER_KEY || 'myMasterKey', //Add your master key here. Keep it secret!
   serverURL: process.env.SERVER_URL || localParseServer,  // Don't forget to change to https if needed
   liveQuery: {
     classNames: ["Posts", "Comments"] // List of classes to support for query subscriptions
@@ -25,7 +30,7 @@ var api = new ParseServer({
 
 
 var dashboard = new ParseDashboard({
-
+  "allowInsecureHTTP": true,
   apps: [
     {
       appId: process.env.APP_ID || 'myAppId',
@@ -34,11 +39,11 @@ var dashboard = new ParseDashboard({
       appName: process.env.APP_NAME || 'MyApp',
     },
   ],
-});
+},true);
 
 
 var app = express();
-app.enable('trust proxy');
+//app.enable('trust proxy');
 
 // Serve static assets from the /public folder
 app.use('/public', express.static(path.join(__dirname, '/public')));
@@ -53,5 +58,5 @@ app.use('/', dashboard);
 var port = process.env.PORT || 4040;
 var httpServer = require('http').createServer(app);
 httpServer.listen(port, function() {
-  console.log('parse-dashboard-example running on port ' + port + '.');
+  console.log('parse-server-dashboard running on port ' + port + '.');
 });
